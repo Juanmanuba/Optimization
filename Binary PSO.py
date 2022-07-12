@@ -3,19 +3,36 @@ import matplotlib.pyplot as plt
 
 
 def objectiveFunction(x):
-    return np.sum(np.square(x))
+
+    Discrete_set = [10, 20, 30, 40]
+    Dx = np.zeros(20)
+    idx = 0
+
+    for i in range(0, len(np.ravel(x)), 2):
+
+        if x[0, i] == 0 and x[0, i+1] == 0:
+            Dx[idx] = Discrete_set[0]
+        elif x[0, i] == 0 and x[0, i+1]:
+            Dx[idx] = Discrete_set[1]
+        elif x[0, i] and x[0, i+1] == 0:
+            Dx[idx] = Discrete_set[2]
+        elif x[0, i] and x[0, i+1]:
+            Dx[idx] = Discrete_set[3]
+        idx = idx + 1
+    return np.sum(np.square(Dx))
 
 # Define the details of the discrete optimization problem
 
 
-vars = 20
+bits = 2
+vars = 20 * bits
 ub = np.ones(vars)
 lb = np.zeros(vars)
 
 # Define PSO's parameters
 
-numberParticles = 30
-iterations = 500
+numberParticles = 80
+iterations = 50
 wMax = 0.9
 wMin = 0.2
 c1 = 2
@@ -56,6 +73,7 @@ for j in range(0, iterations):
     for i in range(0, numberParticles):  # Calculate the objective value
 
         currentX = particles[i].x
+
         particles[i].o = objectiveFunction(currentX)
 
         if particles[i].o < particles[i].pBestO:  # Update PBest
