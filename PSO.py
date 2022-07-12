@@ -15,12 +15,13 @@ lb = -10*np.ones(vars)
 # Define PSO's parameters
 
 numberParticles = 30
-iterations = 500
+iterations = 5
 wMax = 0.9
 wMin = 0.2
 c1 = 2
 c2 = 2
-vMax = 0
+vMax = 0.2 * np.array(ub-lb)
+vMin = -vMax
 
 # PSO algorithm
 
@@ -41,22 +42,19 @@ class Particle:
         self.pBestX = pBestX
         self.pBestO = pBestO
 
-    def myfunc(self):
-        print("Hello my name is " + self.x)
-
 
 particles = []
 
 for x in range(0, numberParticles):
-    p = Particle(np.random.rand(
-        1, vars) * (np.array(ub) - np.array(lb)) + np.array(lb), np.zeros(vars), objectiveFunction(0), np.zeros(vars), float(np.inf))
-    particles.append(p)
+    particles.append(Particle(np.random.rand(
+        1, vars) * (np.array(ub) - np.array(lb)) + np.array(lb), np.ones(vars), [], np.zeros(vars), float(np.inf)))
 
 s = Swarm(np.zeros(vars), float(np.inf))
 
 for j in range(0, iterations):
 
     for i in range(0, numberParticles):  # Calculate the objective value
+
         currentX = particles[i].x
         particles[i].o = objectiveFunction(currentX)
 
@@ -71,4 +69,16 @@ for j in range(0, iterations):
     w = wMax - j * ((wMax - wMin) / iterations)
 
     for i in range(0, numberParticles):
-        particles[i].v = w * 2
+        particles[i].v = w * particles[i].v + c1 * np.random.rand(1, vars) * (particles[i].pBestX - particles[i].x) + \
+            c2 * np.random.rand(1, vars) * \
+            (particles[i].pBestX - particles[i].x)
+
+        index1 = np.argwhere(np.ravel(particles[i].v) > vMax)
+        index2 = np.argwhere(np.ravel(particles[i].v) < vMin)
+        print(index1)
+        print(particles[i].v)
+        print(particles[i].v[0, index1])
+
+        particles[i].x = particles[i].x + particles[i].v
+    print('Iteration #', j, '\n Swarm global best: ', s.gBestO,
+          '\n ')
