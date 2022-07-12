@@ -2,20 +2,41 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+# def objectiveFunction(x):
+#     return np.sum(np.square(x))
+
 def objectiveFunction(x):
-    return np.sum(np.square(x))
+
+    # vars
+    len = x[0, 0]
+    width = x[0, 1]
+
+    # List of your constraints
+    const1 = width >= 3.2 or width <= 6.4
+    const2 = (np.square(len) + np.square(width)) >= 1
+    const3 = len != width
+
+    if const1 and const2 and const3:
+        return 1 * (len + width)
+
+    else:  # penalize the non-feasible solution
+        return 1 * (len + width) + 200
 
 # Define the details of the objective function
 
+# vars = 10
+# ub = 10*np.ones(vars)
+# lb = -10*np.ones(vars)
 
-vars = 10
-ub = 10*np.ones(vars)
-lb = -10*np.ones(vars)
+
+vars = 2
+ub = 7*np.ones(vars)
+lb = 2*np.ones(vars)
 
 # Define PSO's parameters
 
 numberParticles = 30
-iterations = 5
+iterations = 500
 wMax = 0.9
 wMin = 0.2
 c1 = 2
@@ -56,6 +77,7 @@ for j in range(0, iterations):
     for i in range(0, numberParticles):  # Calculate the objective value
 
         currentX = particles[i].x
+        print(currentX)
         particles[i].o = objectiveFunction(currentX)
 
         if particles[i].o < particles[i].pBestO:  # Update PBest
@@ -71,14 +93,25 @@ for j in range(0, iterations):
     for i in range(0, numberParticles):
         particles[i].v = w * particles[i].v + c1 * np.random.rand(1, vars) * (particles[i].pBestX - particles[i].x) + \
             c2 * np.random.rand(1, vars) * \
-            (particles[i].pBestX - particles[i].x)
+            (s.gBestX - particles[i].x)
+
+        # Check the velocities
 
         index1 = np.argwhere(np.ravel(particles[i].v) > vMax)
         index2 = np.argwhere(np.ravel(particles[i].v) < vMin)
-        print(index1)
-        print(particles[i].v)
-        print(particles[i].v[0, index1])
+
+        particles[i].v[0, index1] = vMax[index1]
+        particles[i].v[0, index2] = vMin[index2]
 
         particles[i].x = particles[i].x + particles[i].v
+
+        # Check positions
+
+        index1 = np.argwhere(np.ravel(particles[i].x) > ub)
+        index2 = np.argwhere(np.ravel(particles[i].x) < lb)
+
+        particles[i].x[0, index1] = ub[index1]
+        particles[i].x[0, index2] = lb[index2]
+
     print('Iteration #', j, '\n Swarm global best: ', s.gBestO,
           '\n ')
