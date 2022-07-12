@@ -2,41 +2,20 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# def objectiveFunction(x):
-#     return np.sum(np.square(x))
-
 def objectiveFunction(x):
+    return np.sum(np.square(x))
 
-    # vars
-    len = x[0, 0]
-    width = x[0, 1]
-
-    # List of your constraints
-    const1 = width >= 5 and width <= 6.4
-    const2 = (np.square(len) + np.square(width)) >= 4
-    const3 = len != width
-
-    if const1 and const2 and const3:
-        return 1 * (len + width)
-
-    else:  # penalize the non-feasible solution
-        return 1 * (len + width) + 2000
-
-# Define the details of the objective function
-
-# vars = 10
-# ub = 10*np.ones(vars)
-# lb = -10*np.ones(vars)
+# Define the details of the discrete optimization problem
 
 
-vars = 2
-ub = 7 * np.ones(vars)
-lb = 2 * np.ones(vars)
+vars = 20
+ub = np.ones(vars)
+lb = np.zeros(vars)
 
 # Define PSO's parameters
 
-numberParticles = 5
-iterations = 50
+numberParticles = 30
+iterations = 500
 wMax = 0.9
 wMin = 0.2
 c1 = 2
@@ -67,8 +46,8 @@ class Particle:
 particles = []
 
 for x in range(0, numberParticles):
-    particles.append(Particle(np.random.rand(
-        1, vars) * (np.array(ub) - np.array(lb)) + np.array(lb), np.ones(vars), [], np.zeros(vars), float(np.inf)))
+    particles.append(Particle(np.rint(np.random.rand(
+        1, vars) * (np.array(ub - lb)) + np.array(lb)), np.ones(vars), [], np.zeros(vars), float(np.inf)))
 
 s = Swarm(np.zeros(vars), float(np.inf))
 
@@ -102,15 +81,20 @@ for j in range(0, iterations):
         particles[i].v[0, index1] = vMax[index1]
         particles[i].v[0, index2] = vMin[index2]
 
-        particles[i].x = particles[i].x + particles[i].v
+        # sigmoid transfer function
 
-        # Check positions
+        u = 1 / (1 + np.exp(-particles[i].v))
 
-        index1 = np.argwhere(np.ravel(particles[i].x) > ub)
-        index2 = np.argwhere(np.ravel(particles[i].x) < lb)
+        # update the position of particle i
 
-        particles[i].x[0, index1] = ub[index1]
-        particles[i].x[0, index2] = lb[index2]
+        for d in range(0, vars):
+
+            r = np.random.random()
+
+            if r < u[0, d]:
+                particles[i].x[0, d] = 1
+            else:
+                particles[i].x[0, d] = 0
 
     print('Iteration #', j, '\n Swarm global best: ', s.gBestO,
           '\n ')
