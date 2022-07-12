@@ -31,8 +31,8 @@ lb = np.zeros(vars)
 
 # Define PSO's parameters
 
-numberParticles = 80
-iterations = 50
+numberParticles = 5000
+iterations = 5000
 wMax = 0.9
 wMin = 0.2
 c1 = 2
