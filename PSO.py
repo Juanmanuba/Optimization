@@ -12,15 +12,15 @@ def objectiveFunction(x):
     width = x[0, 1]
 
     # List of your constraints
-    const1 = width >= 3.2 or width <= 6.4
-    const2 = (np.square(len) + np.square(width)) >= 1
+    const1 = width >= 5 and width <= 6.4
+    const2 = (np.square(len) + np.square(width)) >= 4
     const3 = len != width
 
     if const1 and const2 and const3:
         return 1 * (len + width)
 
     else:  # penalize the non-feasible solution
-        return 1 * (len + width) + 200
+        return 1 * (len + width) + 2000
 
 # Define the details of the objective function
 
@@ -30,13 +30,13 @@ def objectiveFunction(x):
 
 
 vars = 2
-ub = 7*np.ones(vars)
-lb = 2*np.ones(vars)
+ub = 7 * np.ones(vars)
+lb = 2 * np.ones(vars)
 
 # Define PSO's parameters
 
-numberParticles = 30
-iterations = 500
+numberParticles = 5
+iterations = 50
 wMax = 0.9
 wMin = 0.2
 c1 = 2
@@ -77,7 +77,6 @@ for j in range(0, iterations):
     for i in range(0, numberParticles):  # Calculate the objective value
 
         currentX = particles[i].x
-        print(currentX)
         particles[i].o = objectiveFunction(currentX)
 
         if particles[i].o < particles[i].pBestO:  # Update PBest
