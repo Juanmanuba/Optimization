@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def objectiveFunction(x):
 
     Discrete_set = [10, 20, 30, 40]
-    Dx = np.zeros(20)
+    Dx = np.zeros(10)
     idx = 0
 
     for i in range(0, len(np.ravel(x)), 2):
@@ -25,14 +25,14 @@ def objectiveFunction(x):
 
 
 bits = 2
-vars = 20 * bits
+vars = 10 * bits
 ub = np.ones(vars)
 lb = np.zeros(vars)
 
 # Define PSO's parameters
 
-numberParticles = 5000
-iterations = 5000
+numberParticles = 30
+iterations = 2000
 wMax = 0.9
 wMin = 0.2
 c1 = 2
