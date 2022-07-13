@@ -8,19 +8,24 @@ import matplotlib.pyplot as plt
 def objectiveFunction(x):
 
     # vars
-    len = x[0, 0]
-    width = x[0, 1]
+    i = 0.001
+    H = 50  # the number of sample points
+    delta = 0.05  # error
 
-    # List of your constraints
-    const1 = width >= 5 and width <= 6.4
-    const2 = (np.square(len) + np.square(width)) >= 4
-    const3 = len != width
+    # Calculate the objective
+    o = -(1/(np.sqrt(2*np.pi))*np.exp(-(np.square(x[0, 0]-1.5) + np.square(x[0, 1]-1.5))) +
+          (2/np.sqrt(2*np.pi))*np.exp(-0.5*((np.square(x[0, 0]-0.5)+np.square(x[0, 1]-0.5))/i)))
 
-    if const1 and const2 and const3:
-        return 1 * (len + width)
+    F = []
 
-    else:  # penalize the non-feasible solution
-        return 1 * (len + width) + 2000
+    for k in range(0, H):
+        mError = 2*delta*np.random.random()-delta
+
+        x_perturbed = x + mError
+        F.append(-(1/(np.sqrt(2*np.pi))*np.exp(-(np.square(x_perturbed[0, 0]-1.5) + np.square(x_perturbed[0, 1]-1.5))) +
+                 (2/np.sqrt(2*np.pi))*np.exp(-0.5*((np.square(x_perturbed[0, 0]-0.5)+np.square(x_perturbed[0, 1]-0.5))/i))))
+
+    return (np.sum(F) + o)/(H+1)
 
 # Define the details of the objective function
 
@@ -35,7 +40,7 @@ lb = 2 * np.ones(vars)
 
 # Define PSO's parameters
 
-numberParticles = 5
+numberParticles = 30
 iterations = 50
 wMax = 0.9
 wMin = 0.2
@@ -113,4 +118,4 @@ for j in range(0, iterations):
         particles[i].x[0, index2] = lb[index2]
 
     print('Iteration #', j, '\n Swarm global best: ', s.gBestO,
-          '\n ')
+          '\nGlobal Best: ', s.gBestX, '\n')
